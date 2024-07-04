@@ -1,4 +1,5 @@
 <?php
+ session_start();
 include("connect_database.php");
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['user'];
@@ -25,6 +26,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $result = sqlsrv_execute($query);
 
             if(sqlsrv_num_rows($query) > 0){
+                while($row = sqlsrv_fetch_array($query)){
+                    $_SESSION["user_id"] = $row["user_id"]; 
+                    $_SESSION["user_name"] = $row["user_name"]; 
+                    $_SESSION["user_pass"] = $row["user_pass"]; 
+                    
+                }
             $answer = 'y';
             $response = [  
                 'user' => htmlspecialchars($user),
