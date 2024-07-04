@@ -1,5 +1,5 @@
 <?php
-	$serverName = 'BD-1406\SQLEXPRESS'; //ชื่อ IP ของฐานข้อมูล
+	$serverName = 'PC-BENZ'; //ชื่อ IP ของฐานข้อมูล
 	$databaseName = "Ecommerce"; //ฐานข้อมูลใหญ่
 	$connectionInfo = array("Database"=>$databaseName,"MultipleActiveResultSets"=>true,"CharacterSet"  => 'UTF-8');
 	$conn = sqlsrv_connect($serverName, $connectionInfo);
