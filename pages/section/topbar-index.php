@@ -55,24 +55,55 @@
                 </a>
                 <button  class="btn border" id="click-basket-cart">
                     <i class="fas fa-shopping-cart text-primary"></i>
-                    <span class="badge">0</span>
+                    <span id="count-cart" class="badge">
+                        <?php 
+                            if (isset($_SESSION['cart'])) { 
+                                echo count($_SESSION['cart']);
+                            }else{ echo "0";} 
+                        ?>
+                    </span>
                 </button>
-                <div id="cart-detail" class="cart-detail" style="">
-                    <!-- <div class="dropdown-item-cart">ssssaddddddddddddd</div>
-                    <div class="dropdown-item-cart">sss</div> -->
-                    <table class="table">
-                        <thead>
+                <div id="cart-detail" class="cart-detail" style="min-width:480px;">
+                <?php if (isset($_SESSION['cart'])) { ?>
+                    <table class="table" id="table-cart">
+                        <thead id="thead-cart">
                             <tr>
                             <th scope="col">ลำดับ</th>
                             <th class="text-center" scope="col" colspan="2">รายละเอียด</th>
+                            <th class="text-center" scope="col">ราคา</th>
                             <th class="text-center" scope="col">จำนวน</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody-cart">
+                            <?php
+                                $order_num=1;   
+                                foreach ($_SESSION['cart'] as $item) {
+                                    $string_img="";
+                                    if($item['id']==1){
+                                        $string_img= "product-1.jpg";
+                                    }else if($item['id']==2){
+                                        $string_img= "product-2.jpg";
+                                    }else if($item['id']==3){
+                                        $string_img= "product-3.jpg";
+                                    }else if($item['id']==4){
+                                        $string_img= "product-4.jpg";
+                                    }else if($item['id']==5){
+                                        $string_img= "product-5.jpg";
+                                    }else if($item['id']==6){
+                                        $string_img= "product-6.jpg";
+                                    }else if($item['id']==7){
+                                        $string_img= "product-7.jpg";
+                                    }else if($item['id']==8){
+                                        $string_img= "product-8.jpg";
+                                    }else{
+                                        $string_img= "product-1.jpg";
+                                    }
+                            ?>
                             <tr>
-                                <th class="align-middle" scope="row">1</th>
-                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/cat-4.jpg" alt=""></td>
-                                <td class="align-middle">Accerssories</td>
+                                <th class="align-middle" scope="row"><?= $order_num?></th>
+                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/<?= $string_img?>" alt=""></td>
+                                <td class="align-middle"><?= $item['name']?></td>
+                                <td class="align-middle text-center"><?= $item['price']?></td>
                                 <td class="align-middle">
                                     <div class="input-group quantity mr-3" style="width: 130px;">
                                         <div class="input-group-btn">
@@ -90,50 +121,19 @@
 
                                 </td>
                             </tr>
-                            <tr>
-                                <th class="align-middle" scope="row">2</th>
-                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/cat-5.jpg" alt=""></td>
-                                <td class="align-middle">Bags</td>
-                                <td class="align-middle">
-                                    <div class="input-group quantity mr-3" style="width: 130px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input type="text" class="form-control bg-secondary text-center" value="1">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-plus">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="align-middle" scope="row">3</th>
-                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/cat-6.jpg" alt=""></td>
-                                <td class="align-middle">Shoes</td>
-                                <td class="align-middle">
-                                    <div class="input-group quantity mr-3" style="width: 130px;">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-minus">
-                                            <i class="fa fa-minus"></i>
-                                            </button>
-                                        </div>
-                                        <input type="text" class="form-control bg-secondary text-center" value="1">
-                                        <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-plus">
-                                                <i class="fa fa-plus"></i>
-                                            </button>
-                                        </div>
-                                    </div>
-
-                                </td>
-                            </tr>
+                            <?php 
+                                $order_num++;
+                                }
+                            ?>
+                           
                         </tbody>
                     </table>
+                    <!-- <button onClick="goToCart()" class="btn btn-block btn-primary my-3 py-3">To Cart</button> -->
+                    <?php }else{
+                    ?>
+                    <div style="margin:10px;width:100%;text-align: center;">ยังไม่มีสินค้าในตระกร้า</div>
+                    <?php
+                    } ?>
                     <button onClick="goToCart()" class="btn btn-block btn-primary my-3 py-3">To Cart</button>
                 </div>
             </div>
