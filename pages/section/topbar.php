@@ -63,7 +63,7 @@
                         ?>
                     </span>
                 </button>
-                <div id="cart-detail" class="cart-detail" style="">
+                <div id="cart-detail" class="cart-detail" style="min-width:480px;">
                     <?php if (isset($_SESSION['cart'])) { ?>
                     <table class="table" id="table-cart">
                         <thead id="thead-cart">
@@ -128,8 +128,13 @@
                            
                         </tbody>
                     </table>
+                    <!-- <button onClick="goToCart()" class="btn btn-block btn-primary my-3 py-3">To Cart</button> -->
+                    <?php }else{
+                    ?>
+                    <div style="margin:10px;width:100%;text-align: center;">ยังไม่มีสินค้าในตระกร้า</div>
+                    <?php
+                    } ?>
                     <button onClick="goToCart()" class="btn btn-block btn-primary my-3 py-3">To Cart</button>
-                    <?php } ?>
                 </div>
             </div>
           
