@@ -43,7 +43,11 @@ session_start();
     <?php require( '../../pages/section/sidebar-main.php');?>
     <!-- Navbar End -->
 
-
+    <?php include("../../pages/data-service/connect_database.php");
+    $sql = "select  * from Products where type_product = 1";
+    // $query = sqlsrv_query($conn,$sql,array(), array( "Scrollable" => SQLSRV_CURSOR_KEYSET ));
+    ?>
+    
     <!-- Page Header Start -->
     <div class="container-fluid bg-secondary mb-5">
         <div class="d-flex flex-column align-items-center justify-content-center" style="min-height: 300px">
