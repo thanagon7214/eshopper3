@@ -16,10 +16,10 @@
                                 <a href="" class="dropdown-item">Baby's Dresses</a>
                             </div>
                         </div> -->
-                        <a href="pages/shop/shop.php" class="nav-item nav-link">Shirts</a>
-                        <a href="pages/shop/shop.php" class="nav-item nav-link">Shoes</a>
-                        <a href="pages/shop/shop.php" class="nav-item nav-link">Bags</a>
-                        <a href="pages/shop/shop.php" class="nav-item nav-link">Accerssories</a>
+                        <a href="pages/shop/shop.php?type_product=1" class="nav-item nav-link">Shirts</a>
+                        <a href="pages/shop/shop.php?type_product=2" class="nav-item nav-link">Shoes</a>
+                        <a href="pages/shop/shop.php?type_product=3" class="nav-item nav-link">Bags</a>
+                        <a href="pages/shop/shop.php?type_product=4" class="nav-item nav-link">Accerssories</a>
                       
                     </div>
                 </nav>

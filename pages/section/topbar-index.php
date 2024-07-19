@@ -1,4 +1,5 @@
     <!-- Topbar Start -->
+    
     <div class="topbar container-fluid">
         <div class="topbar row bg-secondary py-2 px-xl-5">
             <div class="col-lg-6 d-none d-lg-block">
@@ -72,6 +73,7 @@
                             <th class="text-center" scope="col" colspan="2">รายละเอียด</th>
                             <th class="text-center" scope="col">ราคา</th>
                             <th class="text-center" scope="col">จำนวน</th>
+                            <th class="text-center" scope="col"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody-cart">
@@ -101,24 +103,27 @@
                             ?>
                             <tr>
                                 <th class="align-middle" scope="row"><?= $order_num?></th>
-                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/<?= $string_img?>" alt=""></td>
+                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/upload/product_image/<?= $item['image']?>" alt=""></td>
                                 <td class="align-middle"><?= $item['name']?></td>
                                 <td class="align-middle text-center"><?= $item['price']?></td>
                                 <td class="align-middle">
                                     <div class="input-group quantity mr-3" style="width: 130px;">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-minus">
+                                            <button onclick="updateQuantityToCart(<?= $item['id']?>,<?= $item['quantity']?>,'minus')"  class="btn btn-primary btn-minus">
                                             <i class="fa fa-minus"></i>
                                             </button>
                                         </div>
-                                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                                        <input id="quantity-cart"  type="text" class="form-control bg-secondary text-center" value="<?= $item['quantity']?>">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-plus">
+                                            <button onclick="updateQuantityToCart(<?= $item['id']?>,<?= $item['quantity']?>,'plus')"  class="btn btn-primary btn-plus">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
                                     </div>
 
+                                </td>
+                                <td class="align-middle">
+                                    <button onclick="removeToCart(<?= $item['id']?>)" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                             <?php 
@@ -149,17 +154,7 @@
                 </button>
                 <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                     <div class="navbar-nav ml-auto py-0">
-                        <!-- <a href="index.php?page-head=1" class="nav-item nav-link <? ($_GET['page-head']==1||isset($_GET['page-head']))?echo "active":echo "";?>">Home</a>
-                        <a href="pages/shop/shop.php?page-head=2" class="nav-item nav-link <? ($_GET['page-head']==2)?echo "active":echo "";?>">Shop</a>
-                        <a href="pages/shop-cart/shop-cart.php?page-head=3" class="nav-item nav-link <? ($_GET['page-head']==3)?echo "active":echo "";?>">Cart</a>
-                        <a href="pages/shop-checkout/shop-checkout.php?page-head=4" class="nav-item nav-link <? ($_GET['page-head']==4)?echo "active":echo "";?>">Checkout</a> -->
-                        <!-- <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>
-                            <div class="dropdown-menu rounded-0 m-0">
-                                <a href="cart.html" class="dropdown-item">Shopping Cart</a>
-                                <a href="checkout.html" class="dropdown-item">Checkout</a>
-                            </div>
-                        </div> -->
+                       
                         <?php $url=$_SERVER['REQUEST_URI'];?>
                         <a href="index.php" class="nav-item nav-link <?php if($url=="/eshopper/index.php")echo "active";else echo ""?>">Home</a>
                         <a href="pages/shop/shop.php" class="nav-item nav-link <?php if($url=="/eshopper/pages/shop/shop.php")echo "active";else echo ""?>">Shop</a>
