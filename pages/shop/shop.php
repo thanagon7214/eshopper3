@@ -237,21 +237,53 @@ session_start();
                         // ดึงข้อมูลสินค้าจากฐานข้อมูล
                         if($check_have_product){
                             
-                            $sql = "SELECT * FROM products where type_product=".$_GET['type_product']." ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                            // $sql = "SELECT * FROM products where type_product=".$_GET['type_product']." ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                            // $sql = "SELECT * FROM products WHERE type_product = :type_product ORDER BY id LIMIT :offset, :rows";
+                            $sql = "SELECT * FROM Products WHERE type_product =".$_GET['type_product']." ORDER BY id LIMIT ".$offset.",". $itemsPerPage;
                         }else{
                             
-                            $sql = "SELECT * FROM products  ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                            // $sql = "SELECT * FROM products  ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                            // $sql = "SELECT * FROM products ORDER BY id LIMIT :offset, :rows";
+                            // $sql = "SELECT * FROM Products ORDER BY id LIMIT $offset, $itemsPerPage";
+                            $sql = "SELECT * FROM Products ORDER BY id LIMIT ".$offset.",". $itemsPerPage;
                         }
-                        $params = array($offset, $itemsPerPage);
-                        $stmt = sqlsrv_query($conn, $sql, $params);
+                        // $sql = "SELECT * FROM Products";
+                        // $stmt = $conn->prepare($sql);
+                        // echo $sql."<br>";
+                        // if($check_have_product){
+                        // $stmt->bindParam(':type_product', $_GET['type_product'], PDO::PARAM_INT);
+                        // }
+                        // $stmt->bindParam(':offset', $offset, PDO::PARAM_INT);
+                        // $stmt->bindParam(':rows', $itemsPerPage, PDO::PARAM_INT);
+                        
+                        // $stmt->execute();
+                       
+                        // $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-                        if ($stmt === false) {
-                            die(print_r(sqlsrv_errors(), true));
+                        // รันคำสั่ง SQL
+                       
+                        $result = mysqli_query($conn, $sql);
+
+                        if (!$result) {
+                            die("Error: " . mysqli_error($conn));
+                          
                         }
 
-                        $products = array();
-                        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                        // ดึงผลลัพธ์
+                        $results = [];
+                        while ($row = mysqli_fetch_assoc($result)) {
+                            $results[] = $row;
                            
+                        }
+                       
+                        // ปิดการเชื่อมต่อฐานข้อมูล
+                        // mysqli_close($conn);
+                        
+                        $products = array();
+                        // while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                        
+                            // while ($row = $result->fetch_assoc()) {
+                            foreach($results  as $row) {
                             ?>
                                <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                                     <div class="card product-item border-0 mb-4">
@@ -271,176 +303,51 @@ session_start();
                                     </div>
                                 </div>
                             <?php
-                        }
+                            }
+                        
                         ?>
                     
-                    <!-- <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-1.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt1</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(1, 'Shirt1', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-2.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt2</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(2, 'Shirt2', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-3.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt3</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(3, 'Shirt3', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-4.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt4</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(4, 'Shirt4', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-5.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt5</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(5, 'Shirt5', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-6.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt6</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(6, 'Shirt6', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-7.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt7</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(7, 'Shirt7', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-8.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt8</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(8, 'Shirt8', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-                        <div class="card product-item border-0 mb-4">
-                            <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
-                                <img class="img-fluid w-100" src="../../vendor/template-main/img/product-1.jpg" alt="">
-                            </div>
-                            <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
-                                <h6 class="text-truncate mb-3">Shirt9</h6>
-                                <div class="d-flex justify-content-center">
-                                    <h6>$123.00</h6><h6 class="text-muted ml-2"><del>$123.00</del></h6>
-                                </div>
-                            </div>
-                            <div class="card-footer d-flex justify-content-between bg-light border">
-                                <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
-                                <button onclick="addToCart(9, 'Shirt9', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
-                            </div>
-                        </div>
-                    </div> -->
+           
                     <?php
                         if($check_have_product){
-                            $sqlTotal = "SELECT COUNT(*) as total FROM products where type_product =".$_GET['type_product'];
+                            // $sqlTotal = "SELECT COUNT(*) as total FROM products where type_product =".$_GET['type_product'];
+                            // $sqlTotal = "SELECT COUNT(*) as total FROM Products WHERE type_product = :type_product";
+                            $sqlTotal = "SELECT COUNT(*) as total FROM Products WHERE type_product =". $_GET['type_product'];
                         }else{
-                            $sqlTotal = "SELECT COUNT(*) as total FROM products";
+                            $sqlTotal = "SELECT COUNT(*) as total FROM Products";
+                           
                         }
-                        $stmtTotal = sqlsrv_query($conn, $sqlTotal);
+                        // $stmtTotal = sqlsrv_query($conn, $sqlTotal);
 
-                        if ($stmtTotal === false) {
-                            die(print_r(sqlsrv_errors(), true));
+                        // if ($stmtTotal === false) {
+                        //     die(print_r(sqlsrv_errors(), true));
+                        // }
+
+                        // $totalItems = sqlsrv_fetch_array($stmtTotal, SQLSRV_FETCH_ASSOC)['total'];
+                        // $totalPages = ceil($totalItems / $itemsPerPage);
+                        //
+                    //  // เตรียมและรันคำสั่ง SQL
+                    //     $stmtTotal = $conn->prepare($sqlTotal);
+
+                    //     if ($check_have_product) {
+                    //         $stmtTotal->bindParam(':type_product', $_GET['type_product'], PDO::PARAM_INT);
+                    //     }
+
+                    //     $stmtTotal->execute();
+
+                    //     // ดึงผลลัพธ์
+                    //     $totalItems = $stmtTotal->fetch()['total'];
+                    //     $totalPages = ceil($totalItems / $itemsPerPage);
+                    // รันคำสั่ง SQL และตรวจสอบผลลัพธ์
+                        $resultTotal = $conn->query($sqlTotal);
+
+                        if ($resultTotal === false) {
+                            die("Error: " . $conn->error);
                         }
 
-                        $totalItems = sqlsrv_fetch_array($stmtTotal, SQLSRV_FETCH_ASSOC)['total'];
+                        $totalItems = $resultTotal->fetch_assoc()['total'];
                         $totalPages = ceil($totalItems / $itemsPerPage);
+                        //
 
                        
                         $range = 2; // จำนวนหน้าที่ต้องการแสดงทั้งซ้ายและขวาของหน้าปัจจุบัน (รวมเป็น 3 หน้า)
@@ -490,31 +397,13 @@ session_start();
                                 <span class="sr-only">Next</span>
                               </a>
                             </li>
-                        <?php endif; ?>
+                        <?php endif; 
+                        mysqli_close($conn);
+                        ?>
                             </ul>
                             </nav>
                         </div>
-                    <!-- <div class="col-12 pb-1">
-                        <nav aria-label="Page navigation">
-                          <ul class="pagination justify-content-center mb-3">
-                            <li class="page-item disabled">
-                              <a class="page-link" href="#" aria-label="Previous">
-                                <span aria-hidden="true">&laquo;</span>
-                                <span class="sr-only">Previous</span>
-                              </a>
-                            </li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item">
-                              <a class="page-link" href="#" aria-label="Next">
-                                <span aria-hidden="true">&raquo;</span>
-                                <span class="sr-only">Next</span>
-                              </a>
-                            </li>
-                          </ul>
-                        </nav>
-                    </div> -->
+                  
                 </div>
             </div>
             <!-- Shop Product End -->
