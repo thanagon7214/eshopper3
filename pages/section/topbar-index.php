@@ -72,6 +72,7 @@
                             <th class="text-center" scope="col" colspan="2">รายละเอียด</th>
                             <th class="text-center" scope="col">ราคา</th>
                             <th class="text-center" scope="col">จำนวน</th>
+                            <th class="text-center" scope="col"></th>
                             </tr>
                         </thead>
                         <tbody id="tbody-cart">
@@ -101,24 +102,27 @@
                             ?>
                             <tr>
                                 <th class="align-middle" scope="row"><?= $order_num?></th>
-                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/template-main/img/<?= $string_img?>" alt=""></td>
+                                <td class="align-middle"><img class="img-fluid img-cart" src="vendor/upload/product_image/<?= $item['image']?>" alt=""></td>
                                 <td class="align-middle"><?= $item['name']?></td>
                                 <td class="align-middle text-center"><?= $item['price']?></td>
                                 <td class="align-middle">
                                     <div class="input-group quantity mr-3" style="width: 130px;">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-minus">
+                                            <button onclick="updateQuantityToCart(<?= $item['id']?>,<?= $item['quantity']?>,'minus')"  class="btn btn-primary btn-minus">
                                             <i class="fa fa-minus"></i>
                                             </button>
                                         </div>
-                                        <input type="text" class="form-control bg-secondary text-center" value="1">
+                                        <input id="quantity-cart"  type="text" class="form-control bg-secondary text-center" value="<?= $item['quantity']?>">
                                         <div class="input-group-btn">
-                                            <button class="btn btn-primary btn-plus">
+                                            <button onclick="updateQuantityToCart(<?= $item['id']?>,<?= $item['quantity']?>,'plus')"  class="btn btn-primary btn-plus">
                                                 <i class="fa fa-plus"></i>
                                             </button>
                                         </div>
                                     </div>
 
+                                </td>
+                                <td class="align-middle">
+                                    <button onclick="removeToCart(<?= $item['id']?>)" class="btn btn-sm btn-primary"><i class="fa fa-times"></i></button>
                                 </td>
                             </tr>
                             <?php 

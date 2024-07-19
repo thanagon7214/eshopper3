@@ -42,7 +42,9 @@ session_start();
     <!-- Navbar Start -->
     <?php require( '../../pages/section/sidebar-main.php');?>
     <!-- Navbar End -->
-
+    <?php include("../../pages/data-service/connect_database.php");
+    
+    ?>
 
     <!-- Page Header Start -->
     <div class="container-fluid bg-secondary mb-5">
@@ -208,7 +210,71 @@ session_start();
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                   
+                    <?php
+
+                        // ประเภทสินค้า
+                        $check_have_product=false;
+                        if (isset($_GET['type_product']) && (!is_null($_GET['type_product'])) && (!empty($_GET['type_product']))) {
+                            $check_have_product = true;
+                        } else {
+                            $check_have_product = false;
+                        }
+
+                        // จำนวนสินค้าต่อหน้า
+                        $itemsPerPage = 9;
+
+                        // หน้าปัจจุบัน
+                        if (isset($_GET['page']) && is_numeric($_GET['page'])) {
+                            $currentPage = (int)$_GET['page'];
+                        } else {
+                            $currentPage = 1;
+                        }
+
+                        // คำนวณตำแหน่งเริ่มต้นของสินค้าสำหรับหน้าปัจจุบัน
+                        $offset = ($currentPage - 1) * $itemsPerPage;
+
+                        // ดึงข้อมูลสินค้าจากฐานข้อมูล
+                        if($check_have_product){
+                            
+                            $sql = "SELECT * FROM products where type_product=".$_GET['type_product']." ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                        }else{
+                            
+                            $sql = "SELECT * FROM products  ORDER BY id OFFSET ? ROWS FETCH NEXT ? ROWS ONLY";
+                        }
+                        $params = array($offset, $itemsPerPage);
+                        $stmt = sqlsrv_query($conn, $sql, $params);
+
+                        if ($stmt === false) {
+                            die(print_r(sqlsrv_errors(), true));
+                        }
+
+                        $products = array();
+                        while ($row = sqlsrv_fetch_array($stmt, SQLSRV_FETCH_ASSOC)) {
+                           
+                            ?>
+                               <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
+                                    <div class="card product-item border-0 mb-4">
+                                        <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
+                                            <img style="" class="img-fluid w-100" src="../../vendor/upload/product_image/<?= $row['image']?>" alt="">
+                                        </div>
+                                        <div class="card-body border-left border-right text-center p-0 pt-4 pb-3">
+                                            <h6 class="text-truncate mb-3"><?= $row['Name']?></h6>
+                                            <div class="d-flex justify-content-center">
+                                                <h6>$<?= $row['Price']?></h6><h6 class="text-muted ml-2"><del>$<?= $row['Price']?></del></h6>
+                                            </div>
+                                        </div>
+                                        <div class="card-footer d-flex justify-content-between bg-light border">
+                                            <a href="" class="btn btn-sm text-dark p-0"><i class="fas fa-eye text-primary mr-1"></i>View Detail</a>
+                                            <button onclick="addToCart(<?= $row['Id']?>, '<?= $row['Name']?>', <?= $row['Price']?>,'<?= $row['image']?>')" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php
+                        }
+                        ?>
+                    
+                    <!-- <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
                         <div class="card product-item border-0 mb-4">
                             <div class="card-header product-img position-relative overflow-hidden bg-transparent border p-0">
                                 <img class="img-fluid w-100" src="../../vendor/template-main/img/product-1.jpg" alt="">
@@ -360,8 +426,75 @@ session_start();
                                 <button onclick="addToCart(9, 'Shirt9', 123)" href="" class="btn btn-sm text-dark p-0"><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To Cart</button>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 pb-1">
+                    </div> -->
+                    <?php
+                        if($check_have_product){
+                            $sqlTotal = "SELECT COUNT(*) as total FROM products where type_product =".$_GET['type_product'];
+                        }else{
+                            $sqlTotal = "SELECT COUNT(*) as total FROM products";
+                        }
+                        $stmtTotal = sqlsrv_query($conn, $sqlTotal);
+
+                        if ($stmtTotal === false) {
+                            die(print_r(sqlsrv_errors(), true));
+                        }
+
+                        $totalItems = sqlsrv_fetch_array($stmtTotal, SQLSRV_FETCH_ASSOC)['total'];
+                        $totalPages = ceil($totalItems / $itemsPerPage);
+
+                       
+                        $range = 2; // จำนวนหน้าที่ต้องการแสดงทั้งซ้ายและขวาของหน้าปัจจุบัน (รวมเป็น 3 หน้า)
+
+                        // คำนวณค่าเริ่มต้นและค่าสุดท้ายของหน้า
+                        $start = max(1, $currentPage - $range);
+                        $end = min($totalPages, $currentPage + $range);
+
+                        // ปรับค่าเริ่มต้นและค่าสุดท้ายให้อยู่ในขอบเขตที่ถูกต้อง
+                        if ($currentPage - $start < $range) {
+                            $end = min($totalPages, $end + ($range - ($currentPage - $start)));
+                        }
+                        if ($end - $currentPage < $range) {
+                            $start = max(1, $start - ($range - ($end - $currentPage)));
+                        }
+                    ?>
+                        <div class="col-12 pb-1">
+                            <nav aria-label="Page navigation">
+                            <ul class="pagination justify-content-center mb-3">
+                        <?php if ($currentPage > 1): ?>
+                            <!-- <a href="?page=<?php echo $currentPage - 1; ?>">&laquo; Previous</a> -->
+                            <li class="page-item">
+                              
+                              <a class="page-link" href="../../pages/shop/shop.php?page=1&type_product=<?php if(isset($_GET['type_product']) )echo $_GET['type_product']; ?>" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                                <span class="sr-only">Previous</span>
+                              </a>
+                            </li>
+                        <?php endif; ?>
+
+                        <?php for ($page = $start; $page <= $end; $page++): ?>
+                            <?php if ($page == $currentPage): ?>
+                                <!-- <strong><?php echo $page; ?></strong> -->
+                                <li class="page-item active"><a class="page-link" ><?php echo $page; ?></a></li>
+                            <?php else: ?>
+                                <!-- <a href="?page=<?php echo $page; ?>"><?php echo $page; ?></a> -->
+                                <li class="page-item"><a class="page-link" href="../../pages/shop/shop.php?page=<?php echo $page; ?>&type_product=<?php if(isset($_GET['type_product']) )echo $_GET['type_product']; ?>"><?php echo $page; ?></a></li>
+                            <?php endif; ?>
+                        <?php endfor; ?>
+
+                        <?php if ($currentPage < $totalPages): ?>
+                            <!-- <a href="../../pages/shop/shop.php?page=<?php echo $currentPage + 1; ?>">Next &raquo;</a> -->
+                            <li class="page-item">
+                              <!-- <a class="page-link" href="#" aria-label="Next"> -->
+                                <a class="page-link" href="../../pages/shop/shop.php?page=<?php echo $totalPages; ?>&type_product=<?php if(isset($_GET['type_product']) )echo $_GET['type_product']; ?>" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                                <span class="sr-only">Next</span>
+                              </a>
+                            </li>
+                        <?php endif; ?>
+                            </ul>
+                            </nav>
+                        </div>
+                    <!-- <div class="col-12 pb-1">
                         <nav aria-label="Page navigation">
                           <ul class="pagination justify-content-center mb-3">
                             <li class="page-item disabled">
@@ -381,7 +514,7 @@ session_start();
                             </li>
                           </ul>
                         </nav>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <!-- Shop Product End -->
