@@ -148,6 +148,7 @@ if(isset($_SESSION["user_name"])) {
 							processData: false, // ไม่ประมวลผลข้อมูล
 							dataType: 'json', // คาดหวัง response เป็น JSON
 							success: function(response) {
+								// console.log(response.text)
 								if(response.answer=="y"){
 									Swal.fire({
 										icon: "success",
@@ -155,6 +156,7 @@ if(isset($_SESSION["user_name"])) {
 										text: "ยินดีต้อนรับ",
 										confirmButtonColor: "#7C78B8",
 									}).then((result) => {
+										
 										window.location="../../index.php";
 									});
 								}
@@ -189,7 +191,7 @@ if(isset($_SESSION["user_name"])) {
 										text: "การเชื่อมต่อฐานข้อมูลมีปัญหาs",
 										confirmButtonColor: "#7C78B8",
 									}).then((result) => {
-										console.log("การเชื่อมต่อฐานข้อมูลมีปัญหา");
+										console.log(result);
 									});
 							}
 					});
